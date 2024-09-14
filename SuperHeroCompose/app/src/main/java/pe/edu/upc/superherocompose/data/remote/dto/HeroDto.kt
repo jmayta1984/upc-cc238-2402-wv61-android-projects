@@ -9,7 +9,12 @@ data class HeroDto (
     @SerializedName("name")
     val name: String,
     @SerializedName("biography")
-    val biography: Biography
+    val biography: Biography,
+    val image: Poster
+)
+
+data class Poster (
+    val url: String
 )
 
 data class Biography (
@@ -20,5 +25,5 @@ data class Biography (
 )
 
 fun HeroDto.toHero(): Hero {
-    return Hero(name, biography.fullName, biography.publisher)
+    return Hero(name, biography.fullName, biography.publisher, image.url)
 }

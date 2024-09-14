@@ -15,9 +15,9 @@ class HeroRepository(private val heroService: HeroService) {
             response.body()?.heroes?.let { heroesDto ->
                 return@withContext Resource.Success(data = heroesDto.map { it.toHero() }.toList())
             }
-            return@withContext Resource.Error(message = "Data not found")
+            return@withContext Resource.Error(message = response.body()?.error?:"An error occurred")
         } else {
-            return@withContext Resource.Error(message = "An error occurred")
+            return@withContext Resource.Error(message = response.message())
         }
     }
 }
