@@ -75,7 +75,7 @@ fun HeroListScreen(viewModel: HeroListViewModel) {
                                     Text(text = hero.publisher)
                                 }
                                 IconButton(onClick = {
-                                    hero.isFavorite = !hero.isFavorite
+                                    viewModel.onToggleFavorite(hero)
                                 }) {
                                     Icon(
                                         Icons.Filled.Favorite,
