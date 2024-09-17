@@ -3,9 +3,9 @@ package pe.edu.upc.superherocompose.data.remote.dto
 import com.google.gson.annotations.SerializedName
 import pe.edu.upc.superherocompose.domain.Hero
 
-data class HeroDto (
+data class HeroDto(
     @SerializedName("id")
-    val id: Int,
+    val id: String,
     @SerializedName("name")
     val name: String,
     @SerializedName("biography")
@@ -13,11 +13,11 @@ data class HeroDto (
     val image: Poster
 )
 
-data class Poster (
+data class Poster(
     val url: String
 )
 
-data class Biography (
+data class Biography(
     @SerializedName("full-name")
     val fullName: String,
     @SerializedName("publisher")
@@ -25,5 +25,5 @@ data class Biography (
 )
 
 fun HeroDto.toHero(): Hero {
-    return Hero(name, biography.fullName, biography.publisher, image.url)
+    return Hero(id, name, biography.fullName, biography.publisher, image.url)
 }
