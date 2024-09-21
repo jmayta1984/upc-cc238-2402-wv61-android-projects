@@ -14,16 +14,15 @@ class JokeViewModel(private val repository: JokeRepository): ViewModel() {
     private val _state = mutableStateOf(JokeState())
     val state: State<JokeState> get() = _state
 
-    private val _description = mutableStateOf("No jokes found")
-    val description: State<String> get() = _description
-
+    init {
+        _state.value = JokeState(message = "No jokes found")
+    }
     fun getJoke() {
         _state.value = JokeState(isLoading = true)
         viewModelScope.launch {
             val result = repository.getJoke()
             if (result is Resource.Success) {
                 _state.value = JokeState(joke = result.data)
-                _description.value = result.data?.description?:"No jokes found"
             } else {
                 _state.value = JokeState(message = result.message?: "An error occurred")
             }
