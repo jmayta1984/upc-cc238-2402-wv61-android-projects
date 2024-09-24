@@ -3,14 +3,27 @@ package pe.edu.upc.jokescompose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import kotlinx.serialization.Serializable
 import pe.edu.upc.jokescompose.common.Constants
+import pe.edu.upc.jokescompose.common.TopLevelRoute
 import pe.edu.upc.jokescompose.data.local.AppDatabase
 import pe.edu.upc.jokescompose.data.remote.JokeService
 import pe.edu.upc.jokescompose.data.repository.JokeRepository
@@ -46,18 +59,66 @@ class MainActivity : ComponentActivity() {
         val jokeViewModel = JokeViewModel(JokeRepository(service, dao))
         val jokeListViewModel = JokeListViewModel(JokeRepository(service, dao))
 
+        val topLevelRoutes = listOf(
+            TopLevelRoute("Search", Joke, Icons.Filled.Search),
+            TopLevelRoute("Favorites", JokeList, Icons.Filled.Favorite)
+        )
+
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             JokesComposeTheme {
                 val navController = rememberNavController()
 
-                NavHost(navController = navController, startDestination = Joke) {
-                    composable<Joke> { JokeScreen(jokeViewModel) }
-                    composable<JokeList> { JokeListScreen(jokeListViewModel) }
-                    // Add more destinations similarly.
+                val selectedRoute = remember {
+                    mutableStateOf(0)
+                }
+
+                Scaffold(bottomBar = {
+                    BottomNavigation(backgroundColor = MaterialTheme.colors.onPrimary) {
+                        topLevelRoutes.forEachIndexed { index, topLevelRoute ->
+                            BottomNavigationItem(
+                                selected = (index == selectedRoute.value),
+                                label = {
+                                    Text(
+                                        topLevelRoute.name,
+                                        color = if (index == selectedRoute.value) MaterialTheme.colors.primary
+                                        else Color.Gray
+                                    )
+                                },
+                                icon = {
+                                    Icon(
+                                        topLevelRoute.icon,
+                                        topLevelRoute.name,
+                                        tint = if (index == selectedRoute.value) MaterialTheme.colors.primary
+                                        else Color.Gray
+                                    )
+                                },
+                                onClick = {
+                                    navController.navigate(topLevelRoute.route)
+                                    selectedRoute.value = index
+                                },
+                            )
+                        }
+                    }
+                }
+
+                ) { paddingValues ->
+
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = Joke,
+                        modifier = Modifier.padding(paddingValues)
+                    ) {
+                        composable<Joke> { JokeScreen(jokeViewModel) }
+                        composable<JokeList> { JokeListScreen(jokeListViewModel) }
+                        // Add more destinations similarly.
+
+                    }
                 }
             }
         }
     }
 }
+
+
